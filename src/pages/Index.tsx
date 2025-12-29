@@ -1,4 +1,5 @@
 import { useStockAnalysis } from '@/hooks/useStockAnalysis';
+import { useStockWatchlist } from '@/hooks/useStockWatchlist';
 import { StockCard } from '@/components/StockCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, BarChart3, TrendingUp, RefreshCw } from 'lucide-react';
@@ -6,8 +7,16 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
-  const { data, loading, error, refetch } = useStockAnalysis(['2330', '2317', '2454']);
-
+  const { stockCodes, loading: watchlistLoading, error: watchlistError, refetch: refetchWatchlist } = useStockWatchlist();
+  const { data, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useStockAnalysis(stockCodes);
+  
+  const loading = watchlistLoading || analysisLoading;
+  const error = watchlistError || analysisError;
+  
+  const handleRefetch = () => {
+    refetchWatchlist();
+    refetchAnalysis();
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Header */}
@@ -35,7 +44,7 @@ const Index = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => refetch()}
+              onClick={handleRefetch}
               disabled={loading}
               className="animate-fade-in gap-2"
             >
@@ -47,7 +56,7 @@ const Index = () => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3 md:gap-4 mt-6 md:mt-8">
             {[
-              { label: '追蹤股票', value: '3', icon: TrendingUp },
+              { label: '追蹤股票', value: stockCodes.length.toString(), icon: TrendingUp },
               { label: '今日更新', value: data.length.toString(), icon: RefreshCw },
               { label: '分析模型', value: 'Gemini', icon: BarChart3 },
             ].map((stat, i) => (

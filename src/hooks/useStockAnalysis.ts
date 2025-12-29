@@ -28,7 +28,8 @@ interface ApiResponse {
   };
 }
 
-const SUPABASE_URL = 'https://bxqznxcrwuyvnpsvmbob.supabase.co';
+const EXTERNAL_API_URL = 'https://bxqznxcrwuyvnpsvmbob.supabase.co';
+const EXTERNAL_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4cXpueGNyd3V5dm5wc3ZtYm9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwMTk0NjAsImV4cCI6MjA1MDU5NTQ2MH0.VNM6vNOHJ_vvnLU6RPuxAqsFCuGj-t5y2C8FGMnvl3k';
 
 export function useStockAnalysis(stockCodes: string[] = ['2330', '2317', '2454']) {
   const [data, setData] = useState<StockAnalysis[]>([]);
@@ -40,14 +41,13 @@ export function useStockAnalysis(stockCodes: string[] = ['2330', '2317', '2454']
     setError(null);
     
     try {
-      const results: StockAnalysis[] = [];
-      
       const fetchPromises = stockCodes.map(async (stockCode) => {
         const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/get-stock-analysis?stock_code=${stockCode}&limit=1`,
+          `${EXTERNAL_API_URL}/functions/v1/get-stock-analysis?stock_code=${stockCode}&limit=1`,
           {
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${EXTERNAL_API_KEY}`,
             },
           }
         );
@@ -65,9 +65,7 @@ export function useStockAnalysis(stockCodes: string[] = ['2330', '2317', '2454']
       });
       
       const fetchedData = await Promise.all(fetchPromises);
-      fetchedData.forEach(item => {
-        if (item) results.push(item);
-      });
+      const results = fetchedData.filter((item): item is StockAnalysis => item !== null);
       
       setData(results);
     } catch (err) {
