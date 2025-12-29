@@ -122,6 +122,7 @@ const Index = () => {
             <p className="text-sm text-muted-foreground mt-1">請稍後再試</p>
           </div>
         )}
+
       </main>
     </div>
   );
