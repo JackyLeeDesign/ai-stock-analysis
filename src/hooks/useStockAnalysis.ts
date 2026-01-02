@@ -3,10 +3,12 @@ import { useState, useEffect, useCallback } from 'react';
 interface TechnicalSummary {
   trend?: string;
   riskLevel?: string;
-  confidence?: string;
+  confidence?: number;
   supportPrice?: number;
   resistancePrice?: number;
   shortTermAction?: string;
+  midTermAction?: string;
+  longTermAction?: string;
 }
 
 interface StockAnalysis {

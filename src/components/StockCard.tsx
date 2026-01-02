@@ -5,10 +5,12 @@ import { TrendingUp, TrendingDown, Minus, Calendar, Clock, Shield, Target, Zap }
 interface TechnicalSummary {
   trend?: string;
   riskLevel?: string;
-  confidence?: string;
+  confidence?: number;
   supportPrice?: number;
   resistancePrice?: number;
   shortTermAction?: string;
+  midTermAction?: string;
+  longTermAction?: string;
 }
 
 interface StockCardProps {
@@ -114,12 +116,12 @@ export function StockCard({
                 </div>
               </div>
             )}
-            {summary.confidence && (
+            {summary.confidence !== undefined && (
               <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 py-2.5 text-primary">
                 <Target className="h-4 w-4 shrink-0" />
                 <div className="min-w-0">
                   <p className="text-xs opacity-80">信心度</p>
-                  <p className="font-semibold truncate">{summary.confidence}</p>
+                  <p className="font-semibold truncate">{summary.confidence}%</p>
                 </div>
               </div>
             )}
@@ -144,13 +146,38 @@ export function StockCard({
           </div>
         )}
 
-        {summary?.shortTermAction && (
-          <div className="rounded-xl gradient-primary p-4 text-primary-foreground">
-            <div className="flex items-center gap-2 mb-1">
-              <Zap className="h-4 w-4" />
-              <span className="text-sm font-medium opacity-90">操作建議</span>
+        {(summary?.shortTermAction || summary?.midTermAction || summary?.longTermAction) && (
+          <div className="rounded-xl border bg-card/50 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold">操作建議</span>
             </div>
-            <p className="font-semibold">{summary.shortTermAction}</p>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              {summary?.shortTermAction && (
+                <div className="rounded-lg bg-muted/50 p-2">
+                  <p className="text-xs text-muted-foreground mb-1">短線 1-5日</p>
+                  <Badge variant="outline" className="font-semibold">
+                    {summary.shortTermAction === 'buy' ? '買入' : summary.shortTermAction === 'sell' ? '賣出' : '持有'}
+                  </Badge>
+                </div>
+              )}
+              {summary?.midTermAction && (
+                <div className="rounded-lg bg-muted/50 p-2">
+                  <p className="text-xs text-muted-foreground mb-1">中線 1-4週</p>
+                  <Badge variant="outline" className="font-semibold">
+                    {summary.midTermAction === 'buy' ? '買入' : summary.midTermAction === 'sell' ? '賣出' : '持有'}
+                  </Badge>
+                </div>
+              )}
+              {summary?.longTermAction && (
+                <div className="rounded-lg bg-muted/50 p-2">
+                  <p className="text-xs text-muted-foreground mb-1">長線 1-3月</p>
+                  <Badge variant="outline" className="font-semibold">
+                    {summary.longTermAction === 'buy' ? '買入' : summary.longTermAction === 'sell' ? '賣出' : '持有'}
+                  </Badge>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
